@@ -15,9 +15,21 @@ namespace AnniesAnesthesia.Controllers
       _db = db;
     }
 
+
+    //working here to get a list of each patient associated with a particular doctor
     public ActionResult Index()
     {
       List<Doctor> model = _db.Doctors.ToList();
+      var patientCount = _db.DoctorPatient.FromSqlRaw("SELECT COUNT(*) FROM _db.DoctorPatient").ToString();
+      ViewBag.PatientCount = patientCount;
+      // .Include(doctor => doctor.DoctorId == id);
+
+
+      //   "WHILE (SELECT DoctorId FROM DoctorPatient) > 0 BEGIN COUNT(*) FROM DoctorPatient WHERE DoctorId != 0"
+      // );
+      // SQL query: WHILE (SELECT DoctorId FROM DoctorPatients) > 0
+      // BEGIN
+      // SELECT COUNT(*) FROM DoctorPatients WHERE DoctorId > 0
       return View(model);
     }
 

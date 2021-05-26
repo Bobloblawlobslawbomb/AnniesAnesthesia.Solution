@@ -9,13 +9,20 @@
 @if (@Model.Count == 0)
 {
   <h3>No doctors have been added yet!</h3>
-} 
+}
 
-<ul>
-  @foreach(Doctor doctor in Model)
+<table>
+  <tr>
+    <th>Doctor</th>
+    <th>Patients</th>
+  </tr>
+  @foreach (Doctor doctor in Model)
   {
-    <li>@Html.ActionLink($"{doctor.Name}", "Details", new { id = doctor.DoctorId })</li>
+    <tr>
+      <td>@Html.ActionLink($"{doctor.Name}", "Details", new { id = doctor.DoctorId })</td>
+      <td>@ViewBag.PatientCount</td>
+    </tr>
   }
-</ul>
+</table>
 
 <p>@Html.ActionLink("Add new doctor", "Create")</p>
