@@ -12,10 +12,11 @@
 
   @Html.LabelFor(model => model.RealHireDate)
   @Html.TextBoxFor(model => model.RealHireDate, new {@class="form-control", @type="date", @required="required"})
-
+  <br>
   @Html.Label("Add a Specialty")
+  <br>
   @Html.DropDownList("SpecialtyId")
-
+  <br>
   <input type="submit" value="Add new doctor" />
 }
 

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AnniesAnesthesia.Models;
@@ -22,13 +23,19 @@ namespace AnniesAnesthesia.Controllers
 
     public ActionResult Create()
     {
+      ViewBag.SpecialtyId = new SelectList(_db.Specialties, "SpecialtyId", "SpecialtyName");
       return View();
     }
 
     [HttpPost]
-    public ActionResult Create(Doctor doctor)
+    public ActionResult Create(Doctor doctor, Specialty specialty, int SpecialtyId)
     {
       _db.Doctors.Add(doctor);
+      _db.SaveChanges();
+      if (SpecialtyId != 0)
+      {
+        _db.DoctorSpecialties.Add(new DoctorSpecialty() { DoctorId = doctor.DoctorId, SpecialtyId = specialty.SpecialtyId });
+      }
       _db.SaveChanges();
       return RedirectToAction("Index");
     }
@@ -44,17 +51,39 @@ namespace AnniesAnesthesia.Controllers
 
     public ActionResult Edit(int id)
     {
-      var thisDoctor = _db.Doctors.FirstOrDefault(doctor => doctor.DoctorId == id);
+      var thisDoctor = _db.Doctors
+        .Include(doctor => doctor.JoinEntitiesSpecialty)
+        .ThenInclude(join => join.Specialty)
+        .FirstOrDefault(doctor => doctor.DoctorId == id);
+      ViewBag.SpecialtyId = new SelectList(_db.Specialties, "SpecialtyId", "SpecialtyName");
       return View(thisDoctor);
     }
 
     [HttpPost]
-    public ActionResult Edit(Doctor doctor)
+    public ActionResult Edit(Doctor doctor, Specialty specialty, int SpecialtyId)
     {
+      if (SpecialtyId != 0)
+      {
+        _db.DoctorSpecialties.Add(new DoctorSpecialty() { DoctorId = doctor.DoctorId, SpecialtyId = specialty.SpecialtyId });
+      }
       _db.Entry(doctor).State = EntityState.Modified;
       _db.SaveChanges();
       return RedirectToAction("Index");
     }
+
+    //  public ActionResult Edit(int id)
+    // {
+    //   var thisDoctor = _db.Doctors.FirstOrDefault(doctor => doctor.DoctorId == id);
+    //   return View(thisDoctor);
+    // }
+
+    // [HttpPost]
+    // public ActionResult Edit(Doctor doctor)
+    // {
+    //   _db.Entry(doctor).State = EntityState.Modified;
+    //   _db.SaveChanges();
+    //   return RedirectToAction("Index");
+    // }
 
     public ActionResult Delete(int id)
     {
